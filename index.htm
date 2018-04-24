@@ -1,0 +1,227 @@
+﻿<html>
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.min.js"></script>
+</head>
+<body>
+    <button onclick="document.getElementById('inputbox').classList.remove('gizli')">Yeni Soru Girişi</button>
+    <button onclick="fake()">Örnek Grafik</button>
+    <button onclick="sifirla()">Sıfırla</button>
+    <script>
+    function fake(){
+        var fakesoru = [];
+        
+        for(i = 0 ; i < 31; i++){
+            fakesoru.push(Math.round(Math.random() * 200))
+        }
+        
+        localStorage.SSCsorular = JSON.stringify(fakesoru);
+        location.reload();
+    }
+
+    function sifirla() {
+    	var fakesoru = [];
+    	localStorage.SSCsorular = JSON.stringify(fakesoru);
+    	ibalert("Sıfırlandı !!!","location.reload();")
+    	
+    }
+    </script>
+    
+    
+    <div class="chart-container" style="position: relative; height:20vh; width:90vw">
+    <canvas id="myChart"></canvas>
+</div>
+    
+    <script>
+    	var d = new Date;
+        var sorusayisi=[]
+        var days=[];
+        
+        for(var i = 1; i < 32; i++){
+            days.push(i + "." + (d.getMonth()+1) +"."+ d.getFullYear())
+        }
+            
+        
+            var sorusayisi = JSON.parse(localStorage.getItem("SSCsorular"))
+            console.log(sorusayisi);
+        if(typeof(sorusayisi) != typeof(days)){
+            sorusayisi = []
+        }
+
+        for(var i = 1; i >0;){
+                       
+                       var index = sorusayisi.indexOf(null);
+
+if (index !== -1) {
+    sorusayisi[index] = 0;
+}else{localStorage.SSCsorular = JSON.stringify(sorusayisi);break;}
+                       
+                       
+                   }
+
+
+
+var ortalama = [];
+var toplam = 0;
+
+
+//alert(toplam)
+//alert(toplam / sorusayisi.length)
+
+for(var i = 0; i < sorusayisi.length; i++){
+
+toplam = toplam + sorusayisi[i]
+
+	if(i==30){
+		ortalama.push(toplam / sorusayisi.length)
+	}else{
+		if(ortalama.length < 1){
+			ortalama.push(sorusayisi[0])
+		}else{
+		ortalama.push(toplam / (ortalama.length + 1) );
+		}
+	}
+}
+
+console.log(ortalama);
+        
+        
+        
+            function add(x){
+                var cozdu = x
+                console.log(cozdu);
+                if(cozdu == null){}else{
+                var d = new Date;
+                sorusayisi[d.getDate() - 1] = cozdu;
+                    
+                   for(var i = 1; i >0;){
+                       
+                       var index = sorusayisi.indexOf(null);
+
+if (index !== -1) {
+    sorusayisi[index] = 0;
+}else{break;}
+                       
+                       
+                   }
+                    
+                    
+                    
+                    
+                    localStorage.SSCsorular = JSON.stringify(sorusayisi);
+                    document.getElementById('inputbox').classList.add('gizli')
+                    ibalert("Kaydedildi!!!","location.reload(true);");
+                    
+                
+                }
+            }
+            
+            
+            
+            
+        
+var ctx = document.getElementById("myChart").getContext('2d');
+var myChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: days,
+        datasets: [{
+            label: 'Çözülen Soru Sayısı',
+            data: sorusayisi,
+            borderColor: "black",
+            borderWidth: 2
+        },
+{
+            label: 'Ortalama',
+            data: ortalama,
+            borderColor: "red",
+            borderWidth: 2
+        }
+        ]
+    },
+    options: {
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero:true
+                }
+            }]
+        }
+    }
+});
+
+
+
+
+
+
+//alert vb.
+
+var ib_alertsetupstatus = 0;
+
+
+function ibalert(text,callback) {
+	if(ib_alertsetupstatus == 0){
+	var ib_alertbox = document.createElement("div");
+	ib_alertbox.setAttribute("class","gizli");
+	ib_alertbox.setAttribute("id","ib_alertdiv");
+	document.body.appendChild(ib_alertbox);
+
+	var ib_alertbox_text = document.createElement("h1");
+	ib_alertbox_text.setAttribute("id","ib_alerttext");
+
+	var ib_alertbox_ok_btn = document.createElement("button");
+	ib_alertbox_ok_btn.setAttribute("id","ib_alertbox_ok_btn")
+	ib_alertbox_ok_btn.setAttribute("onclick","document.getElementById('ib_alertdiv').classList.add('gizli');"+callback)
+	ib_alertbox_ok_btn.setAttribute("style","width:100%;")
+
+	document.getElementById("ib_alertdiv").appendChild(ib_alertbox_text);
+	document.getElementById("ib_alertdiv").appendChild(ib_alertbox_ok_btn);
+
+	document.getElementById("ib_alertbox_ok_btn").innerHTML = "Tamam";
+
+	ib_alertsetupstatus = 1;
+
+	ibalert(text,callback);
+	}
+
+	document.getElementById("ib_alerttext").innerHTML = "<h2>"+text+"</h2>";
+	document.getElementById("ib_alertdiv").style = "position: absolute;top:50%;left: 50%;transform: translate(-50%,-50%);background-color:lightgray;border:solid black 1px; border-radius:20px;padding:20px;text-align:center;"
+	document.getElementById("ib_alertdiv").classList.remove("gizli");
+
+
+
+
+}
+</script>
+
+<style type="text/css">
+	.gizli{
+		display: none;
+	}
+
+body{
+	margin: 0;
+	padding: 0;
+}
+
+	#inputbox{
+		position: absolute;
+		top:50%;
+		left: 50%;
+		transform: translate(-50%,-50%);
+		background-color: lightgray;
+		border: solid black 3px;
+		border-radius: 20px;
+		padding: 20px;
+		text-align: center;
+	}
+</style>
+
+<div id="inputbox" class="gizli">
+	<h1>Bugün Kaç Soru Çözdün ?</h1>
+	<input type="number" id="soru_txtbox">
+	<button onclick="add(document.getElementById('soru_txtbox').value)">Ekle</button>
+</div>
+</body>
+</html>
